@@ -12,40 +12,47 @@ def main():
     main_window = QMainWindow()
     main_window.setWindowTitle("ECO-Game")
 
-    # --- 1.3 Hintergrundbild setzen ---
+    # --- 1.3 Bildschrimgröße ermitteln ---
+    screen = app.primaryScreen()
+    screen_size = screen.size()
+
+    # --- 1.4 Hintergrundbild setzen ---
     palette = QPalette()
     pixmap = QPixmap("ECO_BG_image.jpeg")
-    palette.setBrush(QPalette.ColorRole.Window, QBrush(pixmap))
+
+    # --- 1.5 Bild auf Bildschirmgröße skalieren ---
+    scaled_pixmap = pixmap.scaled(screen_size, Qt.AspectRatioMode.KeepAspectRatioByExpanding, Qt.TransformationMode.SmoothTransformation)
+    palette.setBrush(QPalette.ColorRole.Window, QBrush(scaled_pixmap))
     main_window.setPalette(palette)
 
-    # --- 1.4 Scrollbereich erstellen ---
+    # --- 1.6 Scrollbereich erstellen ---
     scroll_area = QScrollArea()
     content_widget = QWidget()
 
-    # --- 1.5 Layout für den Inhalt ---
+    # --- 1.7 Layout für den Inhalt ---
     layout = QVBoxLayout(content_widget)
 
-    # --- 1.6 Titel-Label ---
+    # --- 1.8 Titel-Label ---
     title_label = QLabel("ECO - Hauptmenü")
     title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     title_label.setStyleSheet("font-size: 24px; font-weight: bold; color: white; background-color: rgba(0,0,0,100);")
-
-    # --- 1.7 Label zum Layout hinzufügen ---
+    
+    # --- 1.9 Label zum Layout hinzufügen ---
     layout.addWidget(title_label)
 
-    # --- 1.8 Content-Widget in Scroll-Area setzen ---
+    # --- 1.10 Content-Widget in Scroll-Area setzen ---
     scroll_area.setWidget(content_widget)
     scroll_area.setWidgetResizable(True)
     scroll_area.setStyleSheet("background: transparent;")
 
-    # --- 1.9 Scrollarea als zentrales Widget setzen ---
+    # --- 1.11 Scrollarea als zentrales Widget setzen ---
     main_window.setCentralWidget(scroll_area)
 
-    # --- 1.10 Hauptfenster anzeigen ---
-    main_window.showFullScreen()
-
-    # --- 1.11 Anwendungsschleife starten ---
+    # --- 1.12 Hauptfenster anzeigen ---
     main_window.setWindowState(Qt.WindowState.WindowMaximized)
+    main_window.show()
+
+    # --- 1.13 Anwendungsschleife starten ---
     sys.exit(app.exec())
 
 if __name__ == "__main__":
