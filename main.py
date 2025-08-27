@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow 
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtCore import Qt  
 import sys
 
 # ---- 1.Hauptfuntion definieren ----
@@ -9,12 +10,12 @@ def main():
     # --- 1.2 Hauptfenster erstellen ---
     main_window = QMainWindow()
     main_window.setWindowTitle("ECO-Game")
-    main_window.setGeometry(100, 100, 800, 600)
 
     # --- 1.3 Hauptfenster anzeigen ---
-    main_window.show()
+    main_window.showFullScreen()
 
     # --- 1.4 Anwendungsschleife starten ---
+    main_window.setWindowState(Qt.WindowState.WindowMaximized)
     sys.exit(app.exec())
 
 if __name__ == "__main__":
