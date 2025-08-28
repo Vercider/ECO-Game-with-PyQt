@@ -125,12 +125,16 @@ class MainWindow(QMainWindow):
         ressources_layout = QVBoxLayout(ressources_frame)
 
         ressources_title = QLabel("Ressourcen")
+        ressources_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         ressources_title.setStyleSheet("font-weight: bold; font-size: 14px;")
         ressources_layout.addWidget(ressources_title)
 
         self.food_label = QLabel("Nahrung: 0")
+        self.food_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.wood_label = QLabel("Holz: 0")
+        self.wood_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.stone_label = QLabel("Stein: 0")
+        self.stone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         for label in [self.food_label, self.wood_label, self.stone_label]:
             label.setStyleSheet("font-size: 12px; padding: 2px;")
@@ -149,20 +153,23 @@ class MainWindow(QMainWindow):
         population_layout = QVBoxLayout(population_frame)
 
         population_title = QLabel("Bevölkerung")
+        population_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         population_title.setStyleSheet("font-weight: bold; font-size: 14px;")
         population_layout.addWidget(population_title)
 
-        self.population_label = QLabel("0 / 0")
+        self.population_label = QLabel("0 / 0 / 0")
+        self.population_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.population_label.setStyleSheet("font-size: 12px; padding: 2px;")
         population_layout.addWidget(self.population_label)
 
         # -- 2.5.4 START-Button --
         self.start_button = QPushButton("START")
+        self.start_button.setFixedSize(300, 125)
         self.start_button.setStyleSheet("""
             QPushButton { 
                 background-color: lightgreen; 
                 font-weight: bold; 
-                font-size: 14px;
+                font-size: 25px;
                 border: 2px solid darkgreen;
                 border-radius: 5px;
                 padding: 8px;
@@ -172,11 +179,12 @@ class MainWindow(QMainWindow):
 
         # -- 2.5.5 BAUEN-Button --
         self.build_button = QPushButton("BAUEN")
+        self.build_button.setFixedSize(300, 125)
         self.build_button.setStyleSheet("""
             QPushButton { 
                 background-color: lightblue; 
                 font-weight: bold; 
-                font-size: 14px;
+                font-size: 25px;
                 border: 2px solid darkblue;
                 border-radius: 5px;
                 padding: 8px;
@@ -187,10 +195,8 @@ class MainWindow(QMainWindow):
         # -- 2.5.6 Layout zusammenfügen --
         left_layout.addWidget(ressources_frame)
         left_layout.addWidget(population_frame)
-        left_layout.addStretch(1)
         left_layout.addWidget(self.start_button)
         left_layout.addWidget(self.build_button)
-        left_layout.addStretch(1)
 
         grid_layout.addWidget(left_frame, 1, 0, 1, 1)
 
@@ -210,27 +216,16 @@ class MainWindow(QMainWindow):
         # -- 2.6.2 Hauptausgabe-Label definieren -- 
         main_layout = QVBoxLayout(main_frame)
 
-        output_title = QLabel("HAUPTAUSGABE")
-        output_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        output_title.setStyleSheet("""
-            color: white; 
-            font-size: 16px; 
-            font-weight: bold; 
-            padding: 10px;
-            border-bottom: 1px solid gray;
-        """)
-
         # -- 2.6.3 Text für Hauptausgabe definieren --
         self.main_output_text = QLabel("Willkommen bei ECO!\n\nDrücke START um ein Spiel zu starten oder\n LADEN um einen Spielstand zu laden.")
-        self.main_output_text.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self.main_output_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.main_output_text.setWordWrap(True)
         self.main_output_text.setStyleSheet("""
             color: white; 
-            font-size: 14px; 
+            font-size: 35px; 
             padding: 15px;
         """)
 
-        main_layout.addWidget(output_title)
         main_layout.addWidget(self.main_output_text)
 
         grid_layout.addWidget(main_frame, 1, 1, 1, 1)
@@ -246,11 +241,12 @@ class MainWindow(QMainWindow):
 
         # -- 2.7.2 Nächste Runde Button --
         self.next_round_button = QPushButton("Nächste Runde")
+        self.next_round_button.setFixedSize(300, 250)
         self.next_round_button.setStyleSheet("""
             QPushButton { 
                 background-color: lightgray; 
                 font-weight: bold; 
-                font-size: 14px;
+                font-size: 30px;
                 border: 2px solid darkgray;
                 border-radius: 5px;
                 padding: 10px;
@@ -260,11 +256,12 @@ class MainWindow(QMainWindow):
         
         # -- 2.7.3 Speichern Button --
         self.save_button = QPushButton("SPEICHERN")
+        self.save_button.setFixedSize(300, 125)
         self.save_button.setStyleSheet("""
             QPushButton { 
                 background-color: lightblue; 
                 font-weight: bold; 
-                font-size: 14px;
+                font-size: 25px;
                 border: 2px solid darkblue;
                 border-radius: 5px;
                 padding: 10px;
@@ -274,11 +271,12 @@ class MainWindow(QMainWindow):
 
         # -- 2.7.4 Laden Button --
         self.load_button = QPushButton("LADEN")
+        self.load_button.setFixedSize(300, 125)
         self.load_button.setStyleSheet("""
             QPushButton { 
                 background-color: orange; 
                 font-weight: bold; 
-                font-size: 14px;
+                font-size: 25px;
                 border: 2px solid darkorange;
                 border-radius: 5px;
                 padding: 10px;
@@ -287,9 +285,7 @@ class MainWindow(QMainWindow):
         """)
 
         # -- 2.7.5 Layout zusammenfügen --
-        right_layout.addStretch(1)
         right_layout.addWidget(self.next_round_button)
-        right_layout.addStretch(1)
         right_layout.addWidget(self.save_button)
         right_layout.addWidget(self.load_button)
         right_layout.addStretch(2)
@@ -310,15 +306,12 @@ class MainWindow(QMainWindow):
         """)
 
         building_layout = QVBoxLayout(building_frame)
+        building_layout.setContentsMargins(5, 5, 5, 5)
+        building_layout.setSpacing(0)
 
         # -- 2.8.2 Bau-Ebenen-Label --
-        building_title = QLabel("BAU-EBENE")
-        building_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        building_title.setStyleSheet("font-weight: bold; font-size: 16px; padding: 5px;")
-        building_layout.addWidget(building_title)
-
-        # Gebäude-Layout
         icons_layout = QHBoxLayout()
+        icons_layout.setContentsMargins(0, 0, 0, 0)  
 
         buildings = ["🏠 Haus", "🪚 Sägewerk", "⛰️ Steinbruch", "🌾 Farm", "🏪 Markt"]
         self.build_buttons = []
@@ -345,6 +338,7 @@ class MainWindow(QMainWindow):
         
         icons_layout.addStretch()
         building_layout.addLayout(icons_layout)
+        building_layout.addStretch()
 
         grid_layout.addWidget(building_frame, 2, 0, 1, 3)
     
