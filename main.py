@@ -14,7 +14,7 @@ def main():
     # -- 4.1.3 Anwendung über Controller anzeigen --
     controller.show()
     
-    # -- 1.4 Event-Loop starten und auf Beenden warten --
+    # -- 4.1.4 Event-Loop starten und auf Beenden warten --
     sys.exit(app.exec())
 
 # ---- 4.2 Programmstart ----

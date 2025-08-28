@@ -2,15 +2,22 @@ from PyQt6.QtWidgets import (QMainWindow, QScrollArea, QWidget, QVBoxLayout,
                             QHBoxLayout, QGridLayout, QLabel, QApplication, 
                             QPushButton, QFrame)
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPalette, QPixmap, QBrush
+from PyQt6.QtGui import QPixmap, QPalette, QBrush
 
-# ---- 2.Hauptfenster-Klasse ----
+# ---- 2. Hauptfenster-Klasse ----
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        
+        # ✅ FALLBACK: Standard-Werte setzen
+        self.button_width = 200
+        self.font_size_medium = 16
+        self.min_layout_width = 1400
+        self.min_layout_height = 900
+        
         self.setup_ui()
-    
-    # --- 2.1 Hauptfenster-Initialisierung ---
+
+    # --- 2.1 UI-Setup ---
     def setup_ui(self):
         """Erstellung der Benutzeroberfläche"""
         # -- 2.1.1 Hauptfenster-Titel --
@@ -19,31 +26,55 @@ class MainWindow(QMainWindow):
         # -- 2.1.2 Bildschirmgröße ermitteln --
         screen = QApplication.primaryScreen()
         self.screen_size = screen.size()
+
+        # -- 2.1.3 Responsive-Funktion --
+        self.calc_responsive_sizes()
+
+        # -- 2.1.4 Hintergrund und Layout erstellen --
+        self.setup_background()
+        self.setup_layout()
         
-        # -- 2.1.3 Hintergrund und Layout erstellen --
-        self.setup_background()  # ✅ HINZUGEFÜGT
-        self.setup_layout()      # ✅ HINZUGEFÜGT
-        
-        # -- 2.1.4 Fenster maximieren --
+        # -- 2.1.5 Fenster maximieren --
         self.setWindowState(Qt.WindowState.WindowMaximized)
 
-    # --- 2.2 Hintergrund-Initialisierung ---
+    def calc_responsive_sizes(self):
+        """Berechnet responsive Größen basierend auf Bildschirmgröße"""
+        self.base_width = self.screen_size.width()
+        self.base_height = self.screen_size.height()
+        
+        # Button-Breiten
+        self.button_width = int(self.base_width * 0.15)
+        
+        # ✅ FINALE Anpassung der Button-Höhen
+        self.button_height_combined = 185    # ✅ ETWAS GRÖßER: 185px statt 170px für "Nächste Runde"
+        self.button_height_large = 90        # Bleibt gleich für START, BAUEN, SPEICHERN, LADEN
+        self.button_height_small = 60        # Bleibt gleich für Bau-Buttons
+    
+        # Schriftgrößen
+        self.font_size_medium = max(int(self.base_height * 0.018), 14)
+        
+        # Layout-Größen
+        self.min_layout_width = int(self.base_width * 0.95)
+        self.min_layout_height = int(self.base_height * 0.8)
+
+    # --- 2.2 Hintergrund-Setup ---
     def setup_background(self):
-        """Setzt das Hintergrundbild"""
-        # -- 2.2.1 Palette erstellen --
-        palette = QPalette()
-        pixmap = QPixmap("ECO_BG_image.jpeg")
-        
-        # -- 2.2.2 Bild skalieren --
-        scaled_pixmap = pixmap.scaled(
-            self.screen_size, 
-            Qt.AspectRatioMode.KeepAspectRatioByExpanding, 
-            Qt.TransformationMode.SmoothTransformation
-        )
-        
-        # -- 2.2.3 Hintergrund setzen --
-        palette.setBrush(QPalette.ColorRole.Window, QBrush(scaled_pixmap))
-        self.setPalette(palette)
+        """Hintergrund-Setup"""
+        try:
+            # -- 2.2.1 Hintergrundbild laden --
+            background_path = "assets/background.jpg"
+            pixmap = QPixmap(background_path)
+            
+            # -- 2.2.2 Hintergrundbild skalieren --
+            scaled_pixmap = pixmap.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatioByExpanding, Qt.TransformationMode.SmoothTransformation)
+            
+            # -- 2.2.3 Hintergrundbild als Palette setzen --
+            palette = self.palette()
+            palette.setBrush(QPalette.ColorRole.Window, QBrush(scaled_pixmap))
+            self.setPalette(palette)
+        except:
+            # Fallback: Einfacher grauer Hintergrund wenn Bild nicht gefunden
+            self.setStyleSheet("background-color: lightgray;")
 
     # --- 2.3 Haupt-Layout-Initialisierung ---
     def setup_layout(self):
@@ -51,21 +82,22 @@ class MainWindow(QMainWindow):
         # -- 2.3.1 Scrollbereich erstellen --
         scroll_area = QScrollArea()
         main_widget = QWidget()
-        main_widget.setMinimumSize(1400, 900) # min. Layout für Scrollbereich
+        main_widget.setMinimumSize(self.min_layout_width, self.min_layout_height)
 
         # -- 2.3.2 Grid-Layout --
-        grid_layout = QGridLayout(main_widget) # Grid-Umbau
+        grid_layout = QGridLayout(main_widget)
         grid_layout.setSpacing(5)
+        grid_layout.setContentsMargins(5, 5, 5, 5)
 
-        # Spalten-Verhältnis "Links" Labels + Buttons / "Mitte" Hauptausgabe / "Rechts" Buttons
-        grid_layout.setColumnStretch(0, 1) # Links: 1 Teilstück
-        grid_layout.setColumnStretch(1, 3) # Mitte: 3 Teilstücke
-        grid_layout.setColumnStretch(2, 1) # Rechts: 1 Teilstück
+        # Spalten-Verhältnis
+        grid_layout.setColumnStretch(0, 2) # Links: 2 Teilstücke
+        grid_layout.setColumnStretch(1, 4) # Mitte: 4 Teilstücke
+        grid_layout.setColumnStretch(2, 2) # Rechts: 2 Teilstücke
 
         # Zeilen-Verhältnis
-        grid_layout.setRowStretch(0, 0) # Header: fest definierte Höhe
-        grid_layout.setRowStretch(1, 2) # Hauptbereich: 2 Teilstücke
-        grid_layout.setRowStretch(2, 1) # Bau-Ebene: 1 Teilstück  
+        grid_layout.setRowStretch(0, 0) # Header: Feste Höhe
+        grid_layout.setRowStretch(1, 3) # Hauptbereich: 3 Teile
+        grid_layout.setRowStretch(2, 1) # Bau-Ebene: 1 Teil
 
         # -- 2.3.3 Layout-Bereiche erstellen --
         self.create_header(grid_layout)
@@ -76,293 +108,258 @@ class MainWindow(QMainWindow):
 
         # -- 2.3.4 Scroll-Area konfigurieren --
         scroll_area.setWidget(main_widget)
-        scroll_area.setWidgetResizable(False)
+        scroll_area.setWidgetResizable(True)
         scroll_area.setStyleSheet("background: transparent;")
+
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         # -- 2.3.5 Scroll-Area als Hauptinhalt setzen --
         self.setCentralWidget(scroll_area)
 
-    # --- 2.4 Grid-Einzelelemente erschaffen und einbinden ---
+    # --- 2.4 Header-Bereich ---
     def create_header(self, grid_layout):
-        """Header mit Spieletitel erschaffen"""
+        """Header mit Titel"""
+        # -- 2.4.1 Header-Frame --
         header_frame = QFrame()
-        header_frame.setFixedHeight(60)
-        header_frame.setStyleSheet("""
-            QFrame { 
-                background-color: rgba(173, 216, 230, 200); 
-                border: 2px solid black;
-                border-radius: 5px;
-            }
-        """)
-
+        header_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(173, 216, 230, 150); }")
         header_layout = QHBoxLayout(header_frame)
-        self.title_label = QLabel("Eco -Die Wirtschaftsaufbausimulation")
-        self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.title_label.setStyleSheet("font-size: 20px; font-weight: bold; color: black;")
-        header_layout.addWidget(self.title_label)
 
+        # -- 2.4.2 Titel-Label --
+        self.title_label = QLabel("ECO - Hauptmenü")
+        self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.title_label.setStyleSheet(f"font-size: {int(self.font_size_medium * 1.5)}px; font-weight: bold; color: black;")
+
+        # -- 2.4.3 Header-Layout --
+        header_layout.addWidget(self.title_label)
         grid_layout.addWidget(header_frame, 0, 0, 1, 3)
 
     # --- 2.5 Linkes Panel ---
-        # -- 2.5.1 Frame-Bindung für Linken Frame
     def create_left_panel(self, grid_layout):
-        """Linkes Panel: Ressourcen, Bevölkerung, START, BAUEN"""
+        """Linkes Panel mit ORIGINAL Bevölkerungsanzeige"""
         left_frame = QFrame()
         left_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(255,255,255,150); }")
         left_layout = QVBoxLayout(left_frame)
         left_layout.setSpacing(10)
+        left_layout.setContentsMargins(10, 10, 10, 10)
 
-        # -- 2.5.2 Ressourcen-Anzeige --
-        ressources_frame = QFrame()
-        ressources_frame.setStyleSheet("""
-            QFrame { 
-                background-color: white; 
-                border: 1px solid gray; 
-                border-radius: 3px; 
-                padding: 5px;
-            }
-        """)
-        ressources_layout = QVBoxLayout(ressources_frame)
+        # -- 2.5.1 Ressourcen-Frame --
+        resources_frame = QFrame()
+        resources_frame.setStyleSheet("QFrame { border: 1px solid gray; }")
+        resources_layout = QVBoxLayout(resources_frame)
+        resources_layout.setContentsMargins(5, 5, 5, 5)
 
-        ressources_title = QLabel("Ressourcen")
-        ressources_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        ressources_title.setStyleSheet("font-weight: bold; font-size: 14px;")
-        ressources_layout.addWidget(ressources_title)
+        resources_title = QLabel("Ressourcen")
+        resources_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        resources_title.setStyleSheet(f"font-weight: bold; font-size: {self.font_size_medium}px;")
 
         self.food_label = QLabel("Nahrung: 0")
+        self.food_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
         self.food_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.wood_label = QLabel("Holz: 0")
+        self.wood_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
         self.wood_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.stone_label = QLabel("Stein: 0")
+        self.stone_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
         self.stone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        for label in [self.food_label, self.wood_label, self.stone_label]:
-            label.setStyleSheet("font-size: 12px; padding: 2px;")
-            ressources_layout.addWidget(label)
+        resources_layout.addWidget(resources_title)
+        resources_layout.addWidget(self.food_label)
+        resources_layout.addWidget(self.wood_label)
+        resources_layout.addWidget(self.stone_label)
 
-        # -- 2.5.3 Bevölkerung-Anzeige --
+        # -- 2.5.2 ✅ ORIGINAL Bevölkerungs-Frame (zurückgesetzt) --
         population_frame = QFrame()
-        population_frame.setStyleSheet("""
-            QFrame { 
-                background-color: white; 
-                border: 1px solid gray; 
-                border-radius: 3px; 
-                padding: 5px;
-            }
-        """)
+        population_frame.setStyleSheet("QFrame { border: 1px solid gray; }")
         population_layout = QVBoxLayout(population_frame)
+        population_layout.setContentsMargins(5, 5, 5, 5)  # ✅ ZURÜCK zu 5px
 
         population_title = QLabel("Bevölkerung")
         population_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        population_title.setStyleSheet("font-weight: bold; font-size: 14px;")
-        population_layout.addWidget(population_title)
+        population_title.setStyleSheet(f"font-weight: bold; font-size: {self.font_size_medium}px;")
 
         self.population_label = QLabel("0 / 0 / 0")
+        self.population_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
         self.population_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.population_label.setStyleSheet("font-size: 12px; padding: 2px;")
+
+        # ✅ ENTFERNT: Keine Spacer-Labels mehr
+        population_layout.addWidget(population_title)
         population_layout.addWidget(self.population_label)
 
-        # -- 2.5.4 START-Button --
+        # -- 2.5.3 START Button --
         self.start_button = QPushButton("START")
-        self.start_button.setFixedSize(300, 125)
-        self.start_button.setStyleSheet("""
-            QPushButton { 
+        self.start_button.setFixedHeight(self.button_height_large)  # 90px
+        self.start_button.setStyleSheet(f"""
+            QPushButton {{ 
                 background-color: lightgreen; 
                 font-weight: bold; 
-                font-size: 25px;
+                font-size: {self.font_size_medium}px;
                 border: 2px solid darkgreen;
                 border-radius: 5px;
                 padding: 8px;
-            }
-            QPushButton:hover { background-color: green; }
+            }}
+            QPushButton:hover {{ background-color: green; }}
         """)
 
-        # -- 2.5.5 BAUEN-Button --
+        # -- 2.5.4 BAUEN Button --
         self.build_button = QPushButton("BAUEN")
-        self.build_button.setFixedSize(300, 125)
-        self.build_button.setStyleSheet("""
-            QPushButton { 
+        self.build_button.setFixedHeight(self.button_height_large)  # 90px
+        self.build_button.setStyleSheet(f"""
+            QPushButton {{ 
                 background-color: lightblue; 
                 font-weight: bold; 
-                font-size: 25px;
+                font-size: {self.font_size_medium}px;
                 border: 2px solid darkblue;
                 border-radius: 5px;
                 padding: 8px;
-            }
-            QPushButton:hover { background-color: blue; color: white; }
+            }}
+            QPushButton:hover {{ background-color: blue; color: white; }}
         """)
 
-        # -- 2.5.6 Layout zusammenfügen --
-        left_layout.addWidget(ressources_frame)
-        left_layout.addWidget(population_frame)
+        # -- 2.5.5 Layout zusammenfügen --
+        left_layout.addWidget(resources_frame)
+        left_layout.addWidget(population_frame)  
         left_layout.addWidget(self.start_button)
         left_layout.addWidget(self.build_button)
+        left_layout.addStretch()
 
         grid_layout.addWidget(left_frame, 1, 0, 1, 1)
 
-    # --- 2.6 Hauptausgabe ---
-        # -- 2.6.1 Frame Einbindung für Mitte Frame --
+    # --- 2.6 Haupt-Ausgabebereich ---
     def create_main_output(self, grid_layout):
-        """Zentrale Hauptausgabe"""
-        main_frame = QFrame()
-        main_frame.setStyleSheet("""
-            QFrame { 
-                background-color: black; 
-                border: 2px solid gray;
-                border-radius: 5px;
-            }
-        """)
+        """Haupt-Ausgabebereich"""
+        # -- 2.6.1 Haupt-Output-Frame --
+        main_output_frame = QFrame()
+        main_output_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: black; }")
+        main_output_layout = QVBoxLayout(main_output_frame)
 
-        # -- 2.6.2 Hauptausgabe-Label definieren -- 
-        main_layout = QVBoxLayout(main_frame)
-
-        # -- 2.6.3 Text für Hauptausgabe definieren --
-        self.main_output_text = QLabel("Willkommen bei ECO!\n\nDrücke START um ein Spiel zu starten oder\n LADEN um einen Spielstand zu laden.")
+        # -- 2.6.2 Haupt-Output-Text --
+        self.main_output_text = QLabel("Willkommen bei ECO!\n\nDrücke START um ein Spiel zu starten oder\nLADEN um einen Spielstand zu laden.")
         self.main_output_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.main_output_text.setWordWrap(True)
-        self.main_output_text.setStyleSheet("""
-            color: white; 
-            font-size: 35px; 
-            padding: 15px;
-        """)
+        self.main_output_text.setStyleSheet(f"color: white; font-size: {int(self.font_size_medium * 1.2)}px; font-weight: bold;")
 
-        main_layout.addWidget(self.main_output_text)
+        # -- 2.6.3 Haupt-Output-Layout --
+        main_output_layout.addWidget(self.main_output_text)
+        grid_layout.addWidget(main_output_frame, 1, 1, 1, 1)
 
-        grid_layout.addWidget(main_frame, 1, 1, 1, 1)
-    
     # --- 2.7 Rechtes Panel ---
-        # -- 2.7.1 Frame Einbindung für Rechten Frame --
     def create_right_panel(self, grid_layout):
-        """Rechtes Panel: Nächste Runde, SPEICHERN, LADEN"""
+        """Rechtes Panel mit angepasstem Nächste Runde Button"""
         right_frame = QFrame()
         right_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(255,255,255,150); }")
         right_layout = QVBoxLayout(right_frame)
-        right_layout.setSpacing(15)
+        right_layout.setSpacing(10)
+        right_layout.setContentsMargins(10, 10, 10, 10)
 
-        # -- 2.7.2 Nächste Runde Button --
-        self.next_round_button = QPushButton("Nächste Runde")
-        self.next_round_button.setFixedSize(300, 250)
-        self.next_round_button.setStyleSheet("""
-            QPushButton { 
+        # -- 2.7.1 ✅ KLEINERER "Nächste Runde" Button --
+        self.next_round_button = QPushButton("Nächste\nRunde")
+        self.next_round_button.setFixedHeight(self.button_height_combined)  # ✅ 170px statt 200px
+        self.next_round_button.setStyleSheet(f"""
+            QPushButton {{ 
                 background-color: lightgray; 
                 font-weight: bold; 
-                font-size: 30px;
+                font-size: {self.font_size_medium}px;
                 border: 2px solid darkgray;
                 border-radius: 5px;
-                padding: 10px;
-            }
-            QPushButton:hover { background-color: gray; }
+                padding: 8px;
+                text-align: center;
+            }}
+            QPushButton:hover {{ background-color: gray; }}
         """)
-        
-        # -- 2.7.3 Speichern Button --
+
+        # -- 2.7.2 SPEICHERN Button (bleibt gleich) --
         self.save_button = QPushButton("SPEICHERN")
-        self.save_button.setFixedSize(300, 125)
-        self.save_button.setStyleSheet("""
-            QPushButton { 
+        self.save_button.setFixedHeight(self.button_height_large)  # 90px
+        self.save_button.setStyleSheet(f"""
+            QPushButton {{ 
                 background-color: lightblue; 
                 font-weight: bold; 
-                font-size: 25px;
+                font-size: {self.font_size_medium}px;
                 border: 2px solid darkblue;
                 border-radius: 5px;
-                padding: 10px;
-            }
-            QPushButton:hover { background-color: blue; color: white; }
+                padding: 8px;
+            }}
+            QPushButton:hover {{ background-color: blue; color: white; }}
         """)
 
-        # -- 2.7.4 Laden Button --
+        # -- 2.7.3 LADEN Button (bleibt gleich) --
         self.load_button = QPushButton("LADEN")
-        self.load_button.setFixedSize(300, 125)
-        self.load_button.setStyleSheet("""
-            QPushButton { 
+        self.load_button.setFixedHeight(self.button_height_large)  # 90px
+        self.load_button.setStyleSheet(f"""
+            QPushButton {{ 
                 background-color: orange; 
                 font-weight: bold; 
-                font-size: 25px;
+                font-size: {self.font_size_medium}px;
                 border: 2px solid darkorange;
                 border-radius: 5px;
-                padding: 10px;
-            }
-            QPushButton:hover { background-color: darkorange; }
+                padding: 8px;
+            }}
+            QPushButton:hover {{ background-color: darkorange; }}
         """)
 
-        # -- 2.7.5 Layout zusammenfügen --
+        # -- 2.7.4 Layout zusammenfügen --
         right_layout.addWidget(self.next_round_button)
         right_layout.addWidget(self.save_button)
         right_layout.addWidget(self.load_button)
-        right_layout.addStretch(2)
+        right_layout.addStretch()
 
         grid_layout.addWidget(right_frame, 1, 2, 1, 1)
 
-    # --- 2.8 Bau-Ebene ---
-        # -- 2.8.1 Frame Einbindung für Bau Frame --
+    # --- 2.8 Bau-Bereich ---
     def create_building_area(self, grid_layout):
-        """Bau-Ebene mit Gebäude-Icons"""
+        """Bau-Bereich mit Gebäude-Buttons"""
+        # -- 2.8.1 Bau-Frame --
         building_frame = QFrame()
-        building_frame.setStyleSheet("""
-            QFrame { 
-                border: 2px solid black; 
-                background-color: rgba(245,245,245,200);
-                border-radius: 5px;
-            }
-        """)
+        building_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(255,255,255,150); }")
+        building_layout = QHBoxLayout(building_frame)
 
-        building_layout = QVBoxLayout(building_frame)
-        building_layout.setContentsMargins(5, 5, 5, 5)
-        building_layout.setSpacing(0)
+        # -- 2.8.2 Gebäude-Buttons --
+        buildings = [
+            ("🏠 Haus", "Haus"),
+            ("🪚 Sägewerk", "Sägewerk"),
+            ("⛰️ Steinbruch", "Steinbruch"),
+            ("🌾 Farm", "Farm"),
+            ("🏪 Markt", "Markt")
+        ]
 
-        # -- 2.8.2 Bau-Ebenen-Label --
-        icons_layout = QHBoxLayout()
-        icons_layout.setContentsMargins(0, 0, 0, 0)  
-
-        buildings = ["🏠 Haus", "🪚 Sägewerk", "⛰️ Steinbruch", "🌾 Farm", "🏪 Markt"]
-        self.build_buttons = []
-
-        for building in buildings:
-            button = QPushButton(building)
-            button.setStyleSheet("""
-                QPushButton { 
-                    background-color: white; 
-                    border: 2px solid gray;
-                    border-radius: 8px;
-                    padding: 15px;
-                    font-size: 12px;
-                    min-width: 80px;
-                    min-height: 60px;
-                }
-                QPushButton:hover { 
-                    background-color: lightblue; 
-                    border-color: blue;
-                }
+        self.building_buttons = {}
+        for icon_name, building_name in buildings:
+            button = QPushButton(icon_name)
+            button.setStyleSheet(f"""
+                QPushButton {{ 
+                    background-color: lightgray; 
+                    border: 2px solid darkgray; 
+                    font-size: {self.font_size_medium}px; 
+                    padding: 10px;
+                    border-radius: 5px;
+                }}
+                QPushButton:hover {{ background-color: gray; }}
             """)
-            self.build_buttons.append(button)
-            icons_layout.addWidget(button)
-        
-        icons_layout.addStretch()
-        building_layout.addLayout(icons_layout)
-        building_layout.addStretch()
+            self.building_buttons[building_name] = button
+            building_layout.addWidget(button)
 
         grid_layout.addWidget(building_frame, 2, 0, 1, 3)
-    
+
     # --- 2.9 Update-Methoden ---
-        # -- 2.9.1 Update-Ressourcen --
-    def update_ressources(self, food, wood, stone):
+    def update_resources(self, food, wood, stone):
         """Aktualisiert die Ressourcenanzeige"""
         self.food_label.setText(f"Nahrung: {food}")
         self.wood_label.setText(f"Holz: {wood}")
         self.stone_label.setText(f"Stein: {stone}")
 
-        # -- 2.9.2 Update-Bevölkerung --
     def update_population(self, current, max_pop):
         """Aktualisiert die Bevölkerungsanzeige"""
         self.population_label.setText(f"{current} / {max_pop}")
 
-        # -- 2.9.3 Update_Hauptausgabe --
     def update_main_output(self, text):
         """Aktualisiert die Hauptausgabe"""
         self.main_output_text.setText(text)
-    
-    # --- 2.10 Titel-Label-Update ---
+
+    # ✅ FEHLENDE METHODE HINZUGEFÜGT
     def update_title(self, title):
-        """Aktualsiert den Titel"""
+        """Aktualisiert den Header-Titel"""
         self.title_label.setText(title)
 
 
@@ -373,7 +370,6 @@ class MainWindow(QMainWindow):
 
 
 
-        
 
-        
-    
+
+
