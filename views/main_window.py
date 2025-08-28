@@ -45,11 +45,11 @@ class MainWindow(QMainWindow):
         # Button-Breiten
         self.button_width = int(self.base_width * 0.15)
         
-        # ✅ FINALE Anpassung der Button-Höhen
-        self.button_height_combined = 185    # ✅ ETWAS GRÖßER: 185px statt 170px für "Nächste Runde"
-        self.button_height_large = 90        # Bleibt gleich für START, BAUEN, SPEICHERN, LADEN
-        self.button_height_small = 60        # Bleibt gleich für Bau-Buttons
-    
+        # ✅ FINALE Button-Höhen
+        self.button_height_combined = 185    # Für "Nächste Runde"
+        self.button_height_large = 90        # Für START, BAUEN, SPEICHERN, LADEN
+        self.button_height_small = 60        # Für Bau-Buttons
+        
         # Schriftgrößen
         self.font_size_medium = max(int(self.base_height * 0.018), 14)
         
@@ -59,10 +59,10 @@ class MainWindow(QMainWindow):
 
     # --- 2.2 Hintergrund-Setup ---
     def setup_background(self):
-        """Hintergrund-Setup"""
+        """Hintergrund-Setup mit Transparenz"""
         try:
             # -- 2.2.1 Hintergrundbild laden --
-            background_path = "assets/background.jpg"
+            background_path = "ECO_BG_image.jpeg"
             pixmap = QPixmap(background_path)
             
             # -- 2.2.2 Hintergrundbild skalieren --
@@ -73,8 +73,8 @@ class MainWindow(QMainWindow):
             palette.setBrush(QPalette.ColorRole.Window, QBrush(scaled_pixmap))
             self.setPalette(palette)
         except:
-            # Fallback: Einfacher grauer Hintergrund wenn Bild nicht gefunden
-            self.setStyleSheet("background-color: lightgray;")
+            # ✅ Fallback: Transparenter Hintergrund wenn Bild nicht gefunden
+            self.setStyleSheet("background-color: transparent;")
 
     # --- 2.3 Haupt-Layout-Initialisierung ---
     def setup_layout(self):
@@ -119,10 +119,10 @@ class MainWindow(QMainWindow):
 
     # --- 2.4 Header-Bereich ---
     def create_header(self, grid_layout):
-        """Header mit Titel"""
+        """Header mit transparentem Hintergrund"""
         # -- 2.4.1 Header-Frame --
         header_frame = QFrame()
-        header_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(173, 216, 230, 150); }")
+        header_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(173, 216, 230, 180); }")  # ✅ Halbtransparent
         header_layout = QHBoxLayout(header_frame)
 
         # -- 2.4.2 Titel-Label --
@@ -136,23 +136,25 @@ class MainWindow(QMainWindow):
 
     # --- 2.5 Linkes Panel ---
     def create_left_panel(self, grid_layout):
-        """Linkes Panel mit ORIGINAL Bevölkerungsanzeige"""
+        """Linkes Panel - NUR der Panel-Hintergrund transparent"""
         left_frame = QFrame()
-        left_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(255,255,255,150); }")
+        left_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")  # ✅ NUR Panel transparent
         left_layout = QVBoxLayout(left_frame)
         left_layout.setSpacing(10)
         left_layout.setContentsMargins(10, 10, 10, 10)
 
-        # -- 2.5.1 Ressourcen-Frame --
+        # -- 2.5.1 Ressourcen-Frame (NORMAL OPAK) --
         resources_frame = QFrame()
-        resources_frame.setStyleSheet("QFrame { border: 1px solid gray; }")
+        resources_frame.setStyleSheet("QFrame { border: 1px solid gray; background-color: rgba(255,255,255,255); }")  # ✅ OPAK weiß
         resources_layout = QVBoxLayout(resources_frame)
         resources_layout.setContentsMargins(5, 5, 5, 5)
 
+        # -- 2.5.2 Ressourcen-Titel --
         resources_title = QLabel("Ressourcen")
         resources_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         resources_title.setStyleSheet(f"font-weight: bold; font-size: {self.font_size_medium}px;")
 
+        # -- 2.5.3 Ressourcen-Labels --
         self.food_label = QLabel("Nahrung: 0")
         self.food_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
         self.food_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -165,60 +167,63 @@ class MainWindow(QMainWindow):
         self.stone_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
         self.stone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        # Ressourcen-Layout zusammenfügen
         resources_layout.addWidget(resources_title)
         resources_layout.addWidget(self.food_label)
         resources_layout.addWidget(self.wood_label)
         resources_layout.addWidget(self.stone_label)
 
-        # -- 2.5.2 ✅ ORIGINAL Bevölkerungs-Frame (zurückgesetzt) --
+        # -- 2.5.4 Bevölkerungs-Frame (NORMAL OPAK) --
         population_frame = QFrame()
-        population_frame.setStyleSheet("QFrame { border: 1px solid gray; }")
+        population_frame.setStyleSheet("QFrame { border: 1px solid gray; background-color: rgba(255,255,255,255); }")  # ✅ OPAK weiß
         population_layout = QVBoxLayout(population_frame)
-        population_layout.setContentsMargins(5, 5, 5, 5)  # ✅ ZURÜCK zu 5px
+        population_layout.setContentsMargins(5, 5, 5, 5)
 
+        # -- 2.5.5 Bevölkerungs-Titel --
         population_title = QLabel("Bevölkerung")
         population_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         population_title.setStyleSheet(f"font-weight: bold; font-size: {self.font_size_medium}px;")
 
+        # -- 2.5.6 Bevölkerungs-Label --
         self.population_label = QLabel("0 / 0 / 0")
         self.population_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
         self.population_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # ✅ ENTFERNT: Keine Spacer-Labels mehr
+        # Bevölkerungs-Layout zusammenfügen
         population_layout.addWidget(population_title)
         population_layout.addWidget(self.population_label)
 
-        # -- 2.5.3 START Button --
+        # -- 2.5.7 START Button (NORMAL OPAK) --
         self.start_button = QPushButton("START")
-        self.start_button.setFixedHeight(self.button_height_large)  # 90px
+        self.start_button.setFixedHeight(self.button_height_large)
         self.start_button.setStyleSheet(f"""
             QPushButton {{ 
-                background-color: lightgreen; 
+                background-color: lightgreen;  /* ✅ OPAK grün */
                 font-weight: bold; 
                 font-size: {self.font_size_medium}px;
                 border: 2px solid darkgreen;
                 border-radius: 5px;
                 padding: 8px;
             }}
-            QPushButton:hover {{ background-color: green; }}
+            QPushButton:hover {{ background-color: green; }}  /* ✅ OPAK dunkelgrün */
         """)
 
-        # -- 2.5.4 BAUEN Button --
+        # -- 2.5.8 BAUEN Button (NORMAL OPAK) --
         self.build_button = QPushButton("BAUEN")
-        self.build_button.setFixedHeight(self.button_height_large)  # 90px
+        self.build_button.setFixedHeight(self.button_height_large)
         self.build_button.setStyleSheet(f"""
             QPushButton {{ 
-                background-color: lightblue; 
+                background-color: lightblue;  /* ✅ OPAK hellblau */
                 font-weight: bold; 
                 font-size: {self.font_size_medium}px;
                 border: 2px solid darkblue;
                 border-radius: 5px;
                 padding: 8px;
             }}
-            QPushButton:hover {{ background-color: blue; color: white; }}
+            QPushButton:hover {{ background-color: blue; color: white; }}  /* ✅ OPAK blau */
         """)
 
-        # -- 2.5.5 Layout zusammenfügen --
+        # -- 2.5.9 Layout zusammenfügen --
         left_layout.addWidget(resources_frame)
         left_layout.addWidget(population_frame)  
         left_layout.addWidget(self.start_button)
@@ -229,10 +234,10 @@ class MainWindow(QMainWindow):
 
     # --- 2.6 Haupt-Ausgabebereich ---
     def create_main_output(self, grid_layout):
-        """Haupt-Ausgabebereich"""
+        """Haupt-Ausgabebereich mit transparentem Hintergrund"""
         # -- 2.6.1 Haupt-Output-Frame --
         main_output_frame = QFrame()
-        main_output_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: black; }")
+        main_output_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(0, 0, 0, 180); }")  # ✅ Halbtransparent schwarz
         main_output_layout = QVBoxLayout(main_output_frame)
 
         # -- 2.6.2 Haupt-Output-Text --
@@ -246,19 +251,19 @@ class MainWindow(QMainWindow):
 
     # --- 2.7 Rechtes Panel ---
     def create_right_panel(self, grid_layout):
-        """Rechtes Panel mit angepasstem Nächste Runde Button"""
+        """Rechtes Panel - NUR der Panel-Hintergrund transparent"""
         right_frame = QFrame()
-        right_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(255,255,255,150); }")
+        right_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")  # ✅ NUR Panel transparent
         right_layout = QVBoxLayout(right_frame)
         right_layout.setSpacing(10)
         right_layout.setContentsMargins(10, 10, 10, 10)
 
-        # -- 2.7.1 ✅ KLEINERER "Nächste Runde" Button --
+        # -- 2.7.1 "Nächste Runde" Button (NORMAL OPAK) --
         self.next_round_button = QPushButton("Nächste\nRunde")
-        self.next_round_button.setFixedHeight(self.button_height_combined)  # ✅ 170px statt 200px
+        self.next_round_button.setFixedHeight(self.button_height_combined)
         self.next_round_button.setStyleSheet(f"""
             QPushButton {{ 
-                background-color: lightgray; 
+                background-color: lightgray;  /* ✅ OPAK grau */
                 font-weight: bold; 
                 font-size: {self.font_size_medium}px;
                 border: 2px solid darkgray;
@@ -266,37 +271,37 @@ class MainWindow(QMainWindow):
                 padding: 8px;
                 text-align: center;
             }}
-            QPushButton:hover {{ background-color: gray; }}
+            QPushButton:hover {{ background-color: gray; }}  /* ✅ OPAK dunkelgrau */
         """)
 
-        # -- 2.7.2 SPEICHERN Button (bleibt gleich) --
+        # -- 2.7.2 SPEICHERN Button (NORMAL OPAK) --
         self.save_button = QPushButton("SPEICHERN")
-        self.save_button.setFixedHeight(self.button_height_large)  # 90px
+        self.save_button.setFixedHeight(self.button_height_large)
         self.save_button.setStyleSheet(f"""
             QPushButton {{ 
-                background-color: lightblue; 
+                background-color: lightblue;  /* ✅ OPAK hellblau */
                 font-weight: bold; 
                 font-size: {self.font_size_medium}px;
                 border: 2px solid darkblue;
                 border-radius: 5px;
                 padding: 8px;
             }}
-            QPushButton:hover {{ background-color: blue; color: white; }}
+            QPushButton:hover {{ background-color: blue; color: white; }}  /* ✅ OPAK blau */
         """)
 
-        # -- 2.7.3 LADEN Button (bleibt gleich) --
+        # -- 2.7.3 LADEN Button (NORMAL OPAK) --
         self.load_button = QPushButton("LADEN")
-        self.load_button.setFixedHeight(self.button_height_large)  # 90px
+        self.load_button.setFixedHeight(self.button_height_large)
         self.load_button.setStyleSheet(f"""
             QPushButton {{ 
-                background-color: orange; 
+                background-color: orange;  /* ✅ OPAK orange */
                 font-weight: bold; 
                 font-size: {self.font_size_medium}px;
                 border: 2px solid darkorange;
                 border-radius: 5px;
                 padding: 8px;
             }}
-            QPushButton:hover {{ background-color: darkorange; }}
+            QPushButton:hover {{ background-color: darkorange; }}  /* ✅ OPAK dunkelorange */
         """)
 
         # -- 2.7.4 Layout zusammenfügen --
@@ -309,13 +314,12 @@ class MainWindow(QMainWindow):
 
     # --- 2.8 Bau-Bereich ---
     def create_building_area(self, grid_layout):
-        """Bau-Bereich mit Gebäude-Buttons"""
-        # -- 2.8.1 Bau-Frame --
+        """Bau-Bereich - NUR der Panel-Hintergrund transparent"""
         building_frame = QFrame()
-        building_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(255,255,255,150); }")
+        building_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")  # ✅ NUR Panel transparent
         building_layout = QHBoxLayout(building_frame)
 
-        # -- 2.8.2 Gebäude-Buttons --
+        # -- Gebäude-Buttons (NORMAL OPAK) --
         buildings = [
             ("🏠 Haus", "Haus"),
             ("🪚 Sägewerk", "Sägewerk"),
@@ -329,13 +333,13 @@ class MainWindow(QMainWindow):
             button = QPushButton(icon_name)
             button.setStyleSheet(f"""
                 QPushButton {{ 
-                    background-color: lightgray; 
+                    background-color: lightgray;  /* ✅ OPAK grau */
                     border: 2px solid darkgray; 
                     font-size: {self.font_size_medium}px; 
                     padding: 10px;
                     border-radius: 5px;
                 }}
-                QPushButton:hover {{ background-color: gray; }}
+                QPushButton:hover {{ background-color: gray; }}  /* ✅ OPAK dunkelgrau */
             """)
             self.building_buttons[building_name] = button
             building_layout.addWidget(button)
@@ -357,7 +361,6 @@ class MainWindow(QMainWindow):
         """Aktualisiert die Hauptausgabe"""
         self.main_output_text.setText(text)
 
-    # ✅ FEHLENDE METHODE HINZUGEFÜGT
     def update_title(self, title):
         """Aktualisiert den Header-Titel"""
         self.title_label.setText(title)
