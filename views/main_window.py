@@ -57,13 +57,51 @@ class MainWindow(QMainWindow):
         self.min_layout_width = int(self.base_width * 0.95)
         self.min_layout_height = int(self.base_height * 0.8)
 
+    # --- 2.1.6 Shadow-Push-Button Methode mit anpassbarer Schriftgröße ---
+    def create_shadow_push_button(self, text, color, hover_color, height, text_color="white", hover_text_color="white", font_multiplier=1.0):
+        """Button mit Schatten-Push-Effekt und anpassbarer Schriftgröße"""
+        button = QPushButton(text)
+        button.setFixedHeight(height)
+        button.setStyleSheet(f"""
+            QPushButton {{ 
+                background-color: {color};
+                color: {text_color};
+                font-weight: bold; 
+                font-size: {int(self.font_size_medium * font_multiplier)}px;
+                border: 2px solid black;
+                border-radius: 8px;
+                padding: 8px;
+                /* Schatten-Effekt simulieren */
+                margin: 0px 4px 4px 0px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 {color}, stop:1 darker({color}));
+            }}
+            QPushButton:hover {{ 
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 {hover_color}, stop:1 darker({hover_color}));
+                color: {hover_text_color};
+                margin: 1px 3px 3px 1px;
+            }}
+            QPushButton:pressed {{ 
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 darker({hover_color}), stop:1 {hover_color});
+                color: {hover_text_color};
+                margin: 2px 2px 2px 2px;  /* Komplett "eingedrückt" */
+                padding: 6px;
+            }}
+        """)
+        return button
+
     # --- 2.2 Hintergrund-Setup ---
     def setup_background(self):
-        """Hintergrund-Setup mit Transparenz"""
+        """✅ KORRIGIERT: Richtiges Hintergrundbild verwenden"""
         try:
-            # -- 2.2.1 Hintergrundbild laden --
-            background_path = "ECO_BG_image.jpeg"
+            # -- 2.2.1 ✅ RICHTIGES Hintergrundbild laden --
+            background_path = "ECO_BG_image.jpeg"  # ✅ Das mittelalterliche Dorf-Bild
             pixmap = QPixmap(background_path)
+            
+            if pixmap.isNull():
+                raise FileNotFoundError("Hintergrundbild nicht gefunden")
             
             # -- 2.2.2 Hintergrundbild skalieren --
             scaled_pixmap = pixmap.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatioByExpanding, Qt.TransformationMode.SmoothTransformation)
@@ -73,8 +111,8 @@ class MainWindow(QMainWindow):
             palette.setBrush(QPalette.ColorRole.Window, QBrush(scaled_pixmap))
             self.setPalette(palette)
         except:
-            # ✅ Fallback: Transparenter Hintergrund wenn Bild nicht gefunden
-            self.setStyleSheet("background-color: transparent;")
+            # ✅ Fallback: Braun/Beige-Farben passend zum mittelalterlichen Thema
+            self.setStyleSheet("background-color: #8B7355;")  # Erdbraun
 
     # --- 2.3 Haupt-Layout-Initialisierung ---
     def setup_layout(self):
@@ -122,7 +160,7 @@ class MainWindow(QMainWindow):
         """Header mit transparentem Hintergrund"""
         # -- 2.4.1 Header-Frame --
         header_frame = QFrame()
-        header_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(173, 216, 230, 180); }")  # ✅ Halbtransparent
+        header_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(173, 216, 230, 180); }")
         header_layout = QHBoxLayout(header_frame)
 
         # -- 2.4.2 Titel-Label --
@@ -136,35 +174,52 @@ class MainWindow(QMainWindow):
 
     # --- 2.5 Linkes Panel ---
     def create_left_panel(self, grid_layout):
-        """Linkes Panel - NUR der Panel-Hintergrund transparent"""
+        """Linkes Panel mit passenden mittelalterlichen Farben"""
         left_frame = QFrame()
-        left_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")  # ✅ NUR Panel transparent
+        left_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")
         left_layout = QVBoxLayout(left_frame)
         left_layout.setSpacing(10)
         left_layout.setContentsMargins(10, 10, 10, 10)
 
-        # -- 2.5.1 Ressourcen-Frame (NORMAL OPAK) --
+        # -- 2.5.1 ✅ Ressourcen-Frame mit mittelalterlichen Farben --
         resources_frame = QFrame()
-        resources_frame.setStyleSheet("QFrame { border: 1px solid gray; background-color: rgba(255,255,255,255); }")  # ✅ OPAK weiß
+        resources_frame.setStyleSheet("QFrame { border: 1px solid #8B4513; background-color: #F5DEB3; }")  # ✅ Braun/Beige
         resources_layout = QVBoxLayout(resources_frame)
         resources_layout.setContentsMargins(5, 5, 5, 5)
 
-        # -- 2.5.2 Ressourcen-Titel --
+        # -- 2.5.2 ✅ Ressourcen-Titel mit Hintergrund --
         resources_title = QLabel("Ressourcen")
         resources_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        resources_title.setStyleSheet(f"font-weight: bold; font-size: {self.font_size_medium}px;")
+        resources_title.setStyleSheet(f"""
+            font-weight: bold; 
+            font-size: {self.font_size_medium}px; 
+            color: #654321;
+            background-color: #F5DEB3;
+        """)  # ✅ Gleicher Hintergrund wie Frame
 
-        # -- 2.5.3 Ressourcen-Labels --
+        # -- 2.5.3 ✅ Ressourcen-Labels mit Hintergrund --
         self.food_label = QLabel("Nahrung: 0")
-        self.food_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
+        self.food_label.setStyleSheet(f"""
+            font-size: {self.font_size_medium}px; 
+            color: #8B4513;
+            background-color: #F5DEB3;
+        """)  # ✅ Gleicher Hintergrund wie Frame
         self.food_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.wood_label = QLabel("Holz: 0")
-        self.wood_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
+        self.wood_label.setStyleSheet(f"""
+            font-size: {self.font_size_medium}px; 
+            color: #8B4513;
+            background-color: #F5DEB3;
+        """)  # ✅ Gleicher Hintergrund wie Frame
         self.wood_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.stone_label = QLabel("Stein: 0")
-        self.stone_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
+        self.stone_label.setStyleSheet(f"""
+            font-size: {self.font_size_medium}px; 
+            color: #8B4513;
+            background-color: #F5DEB3;
+        """)  # ✅ Gleicher Hintergrund wie Frame
         self.stone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Ressourcen-Layout zusammenfügen
@@ -173,55 +228,54 @@ class MainWindow(QMainWindow):
         resources_layout.addWidget(self.wood_label)
         resources_layout.addWidget(self.stone_label)
 
-        # -- 2.5.4 Bevölkerungs-Frame (NORMAL OPAK) --
+        # -- 2.5.4 ✅ Bevölkerungs-Frame mit mittelalterlichen Farben --
         population_frame = QFrame()
-        population_frame.setStyleSheet("QFrame { border: 1px solid gray; background-color: rgba(255,255,255,255); }")  # ✅ OPAK weiß
+        population_frame.setStyleSheet("QFrame { border: 1px solid #4B0082; background-color: #E6E6FA; }")  # ✅ Lila/Lavendel
         population_layout = QVBoxLayout(population_frame)
         population_layout.setContentsMargins(5, 5, 5, 5)
 
-        # -- 2.5.5 Bevölkerungs-Titel --
+        # -- 2.5.5 ✅ Bevölkerungs-Titel mit Hintergrund --
         population_title = QLabel("Bevölkerung")
         population_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        population_title.setStyleSheet(f"font-weight: bold; font-size: {self.font_size_medium}px;")
+        population_title.setStyleSheet(f"""
+            font-weight: bold; 
+            font-size: {self.font_size_medium}px; 
+            color: #4B0082;
+            background-color: #E6E6FA;
+        """)  # ✅ Gleicher Hintergrund wie Frame
 
-        # -- 2.5.6 Bevölkerungs-Label --
+        # -- 2.5.6 ✅ Bevölkerungs-Label mit Hintergrund --
         self.population_label = QLabel("0 / 0 / 0")
-        self.population_label.setStyleSheet(f"font-size: {self.font_size_medium}px;")
+        self.population_label.setStyleSheet(f"""
+            font-size: {self.font_size_medium}px; 
+            color: #4B0082;
+            background-color: #E6E6FA;
+        """)  # ✅ Gleicher Hintergrund wie Frame
         self.population_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Bevölkerungs-Layout zusammenfügen
         population_layout.addWidget(population_title)
         population_layout.addWidget(self.population_label)
 
-        # -- 2.5.7 START Button (NORMAL OPAK) --
-        self.start_button = QPushButton("START")
-        self.start_button.setFixedHeight(self.button_height_large)
-        self.start_button.setStyleSheet(f"""
-            QPushButton {{ 
-                background-color: lightgreen;  /* ✅ OPAK grün */
-                font-weight: bold; 
-                font-size: {self.font_size_medium}px;
-                border: 2px solid darkgreen;
-                border-radius: 5px;
-                padding: 8px;
-            }}
-            QPushButton:hover {{ background-color: green; }}  /* ✅ OPAK dunkelgrün */
-        """)
+        # -- 2.5.7 START Button --
+        self.start_button = self.create_shadow_push_button(
+            "START", 
+            "green",
+            "darkgreen",
+            self.button_height_large,
+            "white",
+            "white"
+        )
 
-        # -- 2.5.8 BAUEN Button (NORMAL OPAK) --
-        self.build_button = QPushButton("BAUEN")
-        self.build_button.setFixedHeight(self.button_height_large)
-        self.build_button.setStyleSheet(f"""
-            QPushButton {{ 
-                background-color: lightblue;  /* ✅ OPAK hellblau */
-                font-weight: bold; 
-                font-size: {self.font_size_medium}px;
-                border: 2px solid darkblue;
-                border-radius: 5px;
-                padding: 8px;
-            }}
-            QPushButton:hover {{ background-color: blue; color: white; }}  /* ✅ OPAK blau */
-        """)
+        # -- 2.5.8 BAUEN Button --
+        self.build_button = self.create_shadow_push_button(
+            "BAUEN", 
+            "lightblue",
+            "blue",
+            self.button_height_large,
+            "black",
+            "white"
+        )
 
         # -- 2.5.9 Layout zusammenfügen --
         left_layout.addWidget(resources_frame)
@@ -237,7 +291,7 @@ class MainWindow(QMainWindow):
         """Haupt-Ausgabebereich mit transparentem Hintergrund"""
         # -- 2.6.1 Haupt-Output-Frame --
         main_output_frame = QFrame()
-        main_output_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(0, 0, 0, 180); }")  # ✅ Halbtransparent schwarz
+        main_output_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: rgba(0, 0, 0, 180); }")
         main_output_layout = QVBoxLayout(main_output_frame)
 
         # -- 2.6.2 Haupt-Output-Text --
@@ -251,58 +305,43 @@ class MainWindow(QMainWindow):
 
     # --- 2.7 Rechtes Panel ---
     def create_right_panel(self, grid_layout):
-        """Rechtes Panel - NUR der Panel-Hintergrund transparent"""
+        """Rechtes Panel mit animierten Buttons und kontrastreichen Farben"""
         right_frame = QFrame()
-        right_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")  # ✅ NUR Panel transparent
+        right_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")
         right_layout = QVBoxLayout(right_frame)
         right_layout.setSpacing(10)
         right_layout.setContentsMargins(10, 10, 10, 10)
 
-        # -- 2.7.1 "Nächste Runde" Button (NORMAL OPAK) --
-        self.next_round_button = QPushButton("Nächste\nRunde")
-        self.next_round_button.setFixedHeight(self.button_height_combined)
-        self.next_round_button.setStyleSheet(f"""
-            QPushButton {{ 
-                background-color: lightgray;  /* ✅ OPAK grau */
-                font-weight: bold; 
-                font-size: {self.font_size_medium}px;
-                border: 2px solid darkgray;
-                border-radius: 5px;
-                padding: 8px;
-                text-align: center;
-            }}
-            QPushButton:hover {{ background-color: gray; }}  /* ✅ OPAK dunkelgrau */
-        """)
+        # -- 2.7.1 "Nächste Runde" Button mit großer Schrift --
+        self.next_round_button = self.create_shadow_push_button(
+            "Nächste\nRunde", 
+            "lightgray",
+            "gray",
+            self.button_height_combined,
+            "black",
+            "white",
+            1.8  # 80% größere Schrift
+        )
 
-        # -- 2.7.2 SPEICHERN Button (NORMAL OPAK) --
-        self.save_button = QPushButton("SPEICHERN")
-        self.save_button.setFixedHeight(self.button_height_large)
-        self.save_button.setStyleSheet(f"""
-            QPushButton {{ 
-                background-color: lightblue;  /* ✅ OPAK hellblau */
-                font-weight: bold; 
-                font-size: {self.font_size_medium}px;
-                border: 2px solid darkblue;
-                border-radius: 5px;
-                padding: 8px;
-            }}
-            QPushButton:hover {{ background-color: blue; color: white; }}  /* ✅ OPAK blau */
-        """)
+        # -- 2.7.2 SPEICHERN Button --
+        self.save_button = self.create_shadow_push_button(
+            "SPEICHERN", 
+            "lightblue",
+            "blue",
+            self.button_height_large,
+            "black",
+            "white"
+        )
 
-        # -- 2.7.3 LADEN Button (NORMAL OPAK) --
-        self.load_button = QPushButton("LADEN")
-        self.load_button.setFixedHeight(self.button_height_large)
-        self.load_button.setStyleSheet(f"""
-            QPushButton {{ 
-                background-color: orange;  /* ✅ OPAK orange */
-                font-weight: bold; 
-                font-size: {self.font_size_medium}px;
-                border: 2px solid darkorange;
-                border-radius: 5px;
-                padding: 8px;
-            }}
-            QPushButton:hover {{ background-color: darkorange; }}  /* ✅ OPAK dunkelorange */
-        """)
+        # -- 2.7.3 LADEN Button --
+        self.load_button = self.create_shadow_push_button(
+            "LADEN", 
+            "orange",
+            "darkorange",
+            self.button_height_large,
+            "black",
+            "white"
+        )
 
         # -- 2.7.4 Layout zusammenfügen --
         right_layout.addWidget(self.next_round_button)
@@ -312,14 +351,15 @@ class MainWindow(QMainWindow):
 
         grid_layout.addWidget(right_frame, 1, 2, 1, 1)
 
-    # --- 2.8 Bau-Bereich ---
+    # --- 2.8 Bau-Bereich (UNVERÄNDERT - nur Platzhalter) ---
     def create_building_area(self, grid_layout):
-        """Bau-Bereich - NUR der Panel-Hintergrund transparent"""
+        """Bau-Bereich mit einfachen Platzhalter-Buttons"""
+        # -- 2.8.1 Bau-Frame --
         building_frame = QFrame()
-        building_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")  # ✅ NUR Panel transparent
+        building_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")
         building_layout = QHBoxLayout(building_frame)
 
-        # -- Gebäude-Buttons (NORMAL OPAK) --
+        # -- 2.8.2 Gebäude-Buttons (EINFACH - nur Platzhalter) --
         buildings = [
             ("🏠 Haus", "Haus"),
             ("🪚 Sägewerk", "Sägewerk"),
@@ -333,13 +373,17 @@ class MainWindow(QMainWindow):
             button = QPushButton(icon_name)
             button.setStyleSheet(f"""
                 QPushButton {{ 
-                    background-color: lightgray;  /* ✅ OPAK grau */
+                    background-color: lightgray;
+                    color: black;
                     border: 2px solid darkgray; 
                     font-size: {self.font_size_medium}px; 
                     padding: 10px;
                     border-radius: 5px;
                 }}
-                QPushButton:hover {{ background-color: gray; }}  /* ✅ OPAK dunkelgrau */
+                QPushButton:hover {{ 
+                    background-color: gray; 
+                    color: white;
+                }}
             """)
             self.building_buttons[building_name] = button
             building_layout.addWidget(button)
