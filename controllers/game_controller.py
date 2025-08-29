@@ -13,3 +13,9 @@ class GameController:
     def show(self):
         """Zeigt die Anwendung"""
         self.view.show()
+    
+    # --- 3.3 START-Button ---
+    def on_start_game(self):
+        self.view.update_resources(10, 10, 10)
+        self.view.update_population(4, 4, 4)
+        self.view.update_main_output(f"Dein Dorf erblüht\nDu bekommst Ressourcen.\nUnd es wurde eine Hütte gebaut.\nKlicke auf 'Nächste Runde' um weiter zu spielen!")

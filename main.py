@@ -10,6 +10,9 @@ def main():
     
     # -- 4.1.2 Game-Controller erstellen und initialisieren --
     controller = GameController()
+
+    # -- 4.1.3 Controller mit View verbinden --
+    controller.view.set_controller(controller)
     
     # -- 4.1.3 Anwendung über Controller anzeigen --
     controller.show()

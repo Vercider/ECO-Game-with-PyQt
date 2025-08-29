@@ -261,7 +261,7 @@ class MainWindow(QMainWindow):
         """)  # ✅ Gleicher Hintergrund wie Frame
 
         # -- 2.5.6 ✅ Bevölkerungs-Label mit Hintergrund --
-        self.population_label = QLabel("👥 0 / 0")
+        self.population_label = QLabel("👥 0 / 0 / 0")
         self.population_label.setStyleSheet(f"""
             font-size: {self.font_size_medium}px; 
             color: #4B0082;
@@ -313,7 +313,7 @@ class MainWindow(QMainWindow):
         # -- 2.6.2 Haupt-Output-Text --
         self.main_output_text = QLabel("Willkommen bei ECO!\n\nDrücke START um ein Spiel zu starten oder\nLADEN um einen Spielstand zu laden.")
         self.main_output_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.main_output_text.setStyleSheet(f"color: white; font-size: {int(self.font_size_medium * 1.2)}px; font-weight: bold;")
+        self.main_output_text.setStyleSheet(f"color: white; font-size: {int(self.font_size_medium * 2.0)}px; font-weight: bold;")
 
         # -- 2.6.3 Haupt-Output-Layout --
         main_output_layout.addWidget(self.main_output_text)
@@ -409,21 +409,23 @@ class MainWindow(QMainWindow):
     # --- 2.9 Update-Methoden ---
     def update_resources(self, food, wood, stone):
         """Aktualisiert die Ressourcenanzeige"""
-        self.food_label.setText(f"Nahrung: {food}")
-        self.wood_label.setText(f"Holz: {wood}")
-        self.stone_label.setText(f"Stein: {stone}")
+        self.food_label.setText(f"🌾 Nahrung: {food}")
+        self.wood_label.setText(f"🪵 Holz: {wood}")
+        self.stone_label.setText(f"🗿 Stein: {stone}")
 
-    def update_population(self, current, max_pop):
+    def update_population(self, avail_worker, current_worker , max_worker):
         """Aktualisiert die Bevölkerungsanzeige"""
-        self.population_label.setText(f"{current} / {max_pop}")
+        self.population_label.setText(f"👥 {avail_worker} / {current_worker} / {max_worker}")
 
     def update_main_output(self, text):
         """Aktualisiert die Hauptausgabe"""
         self.main_output_text.setText(text)
 
-    def update_title(self, title):
-        """Aktualisiert den Header-Titel"""
-        self.title_label.setText(title)
+    # --- 2.10 START-Button-Controller-Verbindung ---
+    def set_controller(self, controller):
+        """Controller setzen und Button-Events verbinden"""
+        self.controller = controller
+        self.start_button.clicked.connect(controller.on_start_game)
 
 
 
