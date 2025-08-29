@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         """✅ KORRIGIERT: Richtiges Hintergrundbild verwenden"""
         try:
             # -- 2.2.1 ✅ RICHTIGES Hintergrundbild laden --
-            background_path = "ECO_BG_image.jpeg"  # ✅ Das mittelalterliche Dorf-Bild
+            background_path = "pics/ECO_BG_image.jpeg"  # ✅ Das mittelalterliche Dorf-Bild
             pixmap = QPixmap(background_path)
             
             if pixmap.isNull():
@@ -383,28 +383,6 @@ class MainWindow(QMainWindow):
             ("🌾 Farm", "Farm"),
             ("🏪 Markt", "Markt")
         ]
-
-        self.building_buttons = {}
-        for icon_name, building_name in buildings:
-            button = QPushButton(icon_name)
-            button.setStyleSheet(f"""
-                QPushButton {{ 
-                    background-color: lightgray;
-                    color: black;
-                    border: 2px solid darkgray; 
-                    font-size: {self.font_size_medium}px; 
-                    padding: 10px;
-                    border-radius: 5px;
-                }}
-                QPushButton:hover {{ 
-                    background-color: gray; 
-                    color: white;
-                }}
-            """)
-            self.building_buttons[building_name] = button
-            building_layout.addWidget(button)
-
-        grid_layout.addWidget(building_frame, 2, 0, 1, 3)
 
     # --- 2.9 Update-Methoden ---
     def update_resources(self, food, wood, stone):
