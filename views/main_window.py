@@ -45,15 +45,15 @@ class MainWindow(QMainWindow):
         # Button-Breiten
         self.button_width = int(self.base_width * 0.15)
         
-        # ✅ KORRIGIERTE Button-Höhen
-        self.button_height_combined = 230    # ✅ VERGRÖßERT für "Nächste Runde" 
+        # ✅ FINALE Button-Höhen
+        self.button_height_combined = 250    # Für "Nächste Runde"
         self.button_height_large = 90        # Für START, BAUEN, SPEICHERN, LADEN
         self.button_height_small = 60        # Für Bau-Buttons
         
         # Schriftgrößen
         self.font_size_medium = max(int(self.base_height * 0.018), 14)
         
-        # Layout-Größen
+        # ✅ ZURÜCK AUF ORIGINAL: Layout-Größen
         self.min_layout_width = int(self.base_width * 0.95)
         self.min_layout_height = int(self.base_height * 0.8)
 
@@ -144,7 +144,7 @@ class MainWindow(QMainWindow):
         self.create_right_panel(grid_layout)
         self.create_building_area(grid_layout)
 
-        # -- 2.3.4 Scroll-Area konfigurieren --
+        # -- 2.3.4 ✅ ZURÜCK AUF ORIGINAL: Scroll-Area konfigurieren --
         scroll_area.setWidget(main_widget)
         scroll_area.setWidgetResizable(True)
         scroll_area.setStyleSheet("background: transparent;")
@@ -373,16 +373,9 @@ class MainWindow(QMainWindow):
         # -- 2.8.1 Bau-Frame --
         building_frame = QFrame()
         building_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")
-        building_layout = QHBoxLayout(building_frame)
+        self.building_layout = QHBoxLayout(building_frame)
 
-        # -- 2.8.2 Gebäude-Buttons (EINFACH - nur Platzhalter) --
-        buildings = [
-            ("🏠 Haus", "Haus"),
-            ("🪚 Sägewerk", "Sägewerk"),
-            ("⛰️ Steinbruch", "Steinbruch"),
-            ("🌾 Farm", "Farm"),
-            ("🏪 Markt", "Markt")
-        ]
+        grid_layout.addWidget(building_frame, 2, 0, 1, 3)  # ✅ Frame zu Grid hinzufügen
 
     # --- 2.9 Update-Methoden ---
     def update_resources(self, food, wood, stone):
@@ -405,6 +398,25 @@ class MainWindow(QMainWindow):
         self.controller = controller
         self.start_button.clicked.connect(controller.on_start_game)
 
+    # --- 2.11 Gebäude bauen ---
+    def add_building_to_area(self, building_type, state="building"):
+        """Fügt Gebäude zum Bau-Bereich hinzu"""
+        # building types: "Bauernhof", "Holzverschlag", "Hütte", "Steinbruch" als Dateinamen
+        try:
+            pixmap = QPixmap(f"pics/{building_type}.png")
+            if not pixmap.isNull():
+                building_icon = QLabel()
+                building_icon.setPixmap(pixmap.scaled(
+                    self.button_height_large,
+                    self.button_height_large,
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation
+                ))
+                building_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+                self.building_layout.addWidget(building_icon)
+        except Exception as e:
+            print(f"Fehler beim laden von {building_type}.png: {e}")
 
 
 

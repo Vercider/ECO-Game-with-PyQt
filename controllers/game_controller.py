@@ -19,3 +19,5 @@ class GameController:
         self.view.update_resources(10, 10, 10)
         self.view.update_population(4, 4, 4)
         self.view.update_main_output(f"Dein Dorf erblüht\nDu bekommst Ressourcen.\nUnd es wurde eine Hütte gebaut.\nKlicke auf 'Nächste Runde' um weiter zu spielen!")
+
+        self.view.add_building_to_area("Hütte", "completed")
