@@ -45,8 +45,8 @@ class MainWindow(QMainWindow):
         # Button-Breiten
         self.button_width = int(self.base_width * 0.15)
         
-        # ✅ FINALE Button-Höhen
-        self.button_height_combined = 185    # Für "Nächste Runde"
+        # ✅ KORRIGIERTE Button-Höhen
+        self.button_height_combined = 230    # ✅ VERGRÖßERT für "Nächste Runde" 
         self.button_height_large = 90        # Für START, BAUEN, SPEICHERN, LADEN
         self.button_height_small = 60        # Für Bau-Buttons
         
@@ -183,7 +183,15 @@ class MainWindow(QMainWindow):
 
         # -- 2.5.1 ✅ Ressourcen-Frame mit mittelalterlichen Farben --
         resources_frame = QFrame()
-        resources_frame.setStyleSheet("QFrame { border: 1px solid #8B4513; background-color: #F5DEB3; }")  # ✅ Braun/Beige
+        resources_frame.setStyleSheet("""
+            QFrame { 
+                border: 2px solid #8B4513; 
+                border-radius: 8px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #F5DEB3, stop:1 #DEB887);
+                margin: 2px 4px 4px 2px;  /* ✅ Qt-Schatten */
+            }
+        """)  # ✅ Braun/Beige
         resources_layout = QVBoxLayout(resources_frame)
         resources_layout.setContentsMargins(5, 5, 5, 5)
 
@@ -198,7 +206,7 @@ class MainWindow(QMainWindow):
         """)  # ✅ Gleicher Hintergrund wie Frame
 
         # -- 2.5.3 ✅ Ressourcen-Labels mit Hintergrund --
-        self.food_label = QLabel("Nahrung: 0")
+        self.food_label = QLabel("🌾 Nahrung: 0")
         self.food_label.setStyleSheet(f"""
             font-size: {self.font_size_medium}px; 
             color: #8B4513;
@@ -206,7 +214,7 @@ class MainWindow(QMainWindow):
         """)  # ✅ Gleicher Hintergrund wie Frame
         self.food_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.wood_label = QLabel("Holz: 0")
+        self.wood_label = QLabel("🪵 Holz: 0")
         self.wood_label.setStyleSheet(f"""
             font-size: {self.font_size_medium}px; 
             color: #8B4513;
@@ -214,7 +222,7 @@ class MainWindow(QMainWindow):
         """)  # ✅ Gleicher Hintergrund wie Frame
         self.wood_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.stone_label = QLabel("Stein: 0")
+        self.stone_label = QLabel("🗿 Stein: 0")
         self.stone_label.setStyleSheet(f"""
             font-size: {self.font_size_medium}px; 
             color: #8B4513;
@@ -230,7 +238,15 @@ class MainWindow(QMainWindow):
 
         # -- 2.5.4 ✅ Bevölkerungs-Frame mit mittelalterlichen Farben --
         population_frame = QFrame()
-        population_frame.setStyleSheet("QFrame { border: 1px solid #4B0082; background-color: #E6E6FA; }")  # ✅ Lila/Lavendel
+        population_frame.setStyleSheet("""
+            QFrame { 
+                border: 2px solid #4B0082; 
+                border-radius: 12px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E6E6FA, stop:0.3 #DDA0DD, stop:1 #D8BFD8);
+                margin: 2px 4px 4px 2px;
+            }
+        """)  # ✅ Lila/Lavendel
         population_layout = QVBoxLayout(population_frame)
         population_layout.setContentsMargins(5, 5, 5, 5)
 
@@ -245,7 +261,7 @@ class MainWindow(QMainWindow):
         """)  # ✅ Gleicher Hintergrund wie Frame
 
         # -- 2.5.6 ✅ Bevölkerungs-Label mit Hintergrund --
-        self.population_label = QLabel("0 / 0 / 0")
+        self.population_label = QLabel("👥 0 / 0")
         self.population_label.setStyleSheet(f"""
             font-size: {self.font_size_medium}px; 
             color: #4B0082;
@@ -305,22 +321,22 @@ class MainWindow(QMainWindow):
 
     # --- 2.7 Rechtes Panel ---
     def create_right_panel(self, grid_layout):
-        """Rechtes Panel mit animierten Buttons und kontrastreichen Farben"""
+        """Rechtes Panel mit vergrößertem "Nächste Runde" Button"""
         right_frame = QFrame()
         right_frame.setStyleSheet("QFrame { border: 2px solid black; background-color: transparent; }")
         right_layout = QVBoxLayout(right_frame)
         right_layout.setSpacing(10)
         right_layout.setContentsMargins(10, 10, 10, 10)
 
-        # -- 2.7.1 "Nächste Runde" Button mit großer Schrift --
+        # -- 2.7.1 ✅ VERGRÖßERTER "Nächste Runde" Button --
         self.next_round_button = self.create_shadow_push_button(
             "Nächste\nRunde", 
             "lightgray",
             "gray",
-            self.button_height_combined,
+            self.button_height_combined,  # ✅ Jetzt 250px statt 185px
             "black",
             "white",
-            1.8  # 80% größere Schrift
+            2.2  # ✅ Noch größere Schrift (war 1.8)
         )
 
         # -- 2.7.2 SPEICHERN Button --
